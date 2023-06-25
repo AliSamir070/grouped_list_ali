@@ -240,7 +240,8 @@ class GroupedListView<T, E> extends StatefulWidget {
 }
 
 class _GroupedListViewState<T, E> extends State<GroupedListView<T, E>> {
-  final StreamController<int> _streamController = StreamController<int>();
+  late StreamController<int> _streamController;
+  Stream<int>? _stream;
   final LinkedHashMap<String, GlobalKey> _keys = LinkedHashMap();
   final GlobalKey _key = GlobalKey();
   late final ScrollController _controller;
@@ -258,6 +259,8 @@ class _GroupedListViewState<T, E> extends State<GroupedListView<T, E>> {
 
   @override
   void initState() {
+    _streamController = StreamController<int>();
+    _stream = _streamController.stream.asBroadcastStream();
     _controller = widget.controller ?? ScrollController();
     if (widget.useStickyGroupSeparators) {
       _controller.addListener(_scrollListener);
@@ -267,6 +270,7 @@ class _GroupedListViewState<T, E> extends State<GroupedListView<T, E>> {
 
   @override
   void dispose() {
+
     if (widget.useStickyGroupSeparators) {
       _controller.removeListener(_scrollListener);
     }
@@ -274,6 +278,7 @@ class _GroupedListViewState<T, E> extends State<GroupedListView<T, E>> {
       _controller.dispose();
     }
     _streamController.close();
+    _stream = null;
     super.dispose();
   }
 
@@ -342,7 +347,7 @@ class _GroupedListViewState<T, E> extends State<GroupedListView<T, E>> {
           itemBuilder: itemBuilder,
         ),
         StreamBuilder<int>(
-            stream: _streamController.stream,
+            stream: _stream,
             initialData: _topElementIndex,
             builder: (context, snapshot) {
               if (snapshot.hasData) {

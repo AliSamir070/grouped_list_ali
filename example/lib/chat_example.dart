@@ -29,9 +29,14 @@ List<Element> _elements = [
 
 GlobalKey _groupListKey = GlobalKey();
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -47,25 +52,30 @@ class MyApp extends StatelessWidget {
         body: Builder(
           builder: (context) => Column(
             children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.8,
-                child: GroupedListView<Element, DateTime>(
-                  key: _groupListKey,
-                  elements: _elements,
-                  order: GroupedListOrder.DESC,
-                  reverse: true,
-                  floatingHeader: true,
-                  useStickyGroupSeparators: true,
-                  groupBy: (Element element) => DateTime(
-                    element.date.year,
-                    element.date.month,
-                    element.date.day,
+              Expanded(
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.8,
+                  child: GroupedListView<Element, DateTime>(
+                    key: _groupListKey,
+                    elements: _elements,
+                    order: GroupedListOrder.DESC,
+                    reverse: true,
+                    floatingHeader: true,
+                    useStickyGroupSeparators: true,
+                    groupBy: (Element element) => DateTime(
+                      element.date.year,
+                      element.date.month,
+                      element.date.day,
+                    ),
+                    groupHeaderBuilder: _createGroupHeader,
+                    itemBuilder: (_, Element element) =>
+                        _createItem(context, element),
                   ),
-                  groupHeaderBuilder: _createGroupHeader,
-                  itemBuilder: (_, Element element) =>
-                      _createItem(context, element),
                 ),
               ),
+              ElevatedButton(onPressed: (){
+                setState((){});
+              }, child: Text("Test"))
             ],
           ),
         ),
